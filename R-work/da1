@@ -1,0 +1,196 @@
+# Create Shiny object
+shinyApp(ui = ui, server = server)
+
+subnodes<-MisNodes[MisNodes$name == "265325201472", ]
+subnodes
+a<-which(MisLinks$source==subnodes$link_id)
+a
+b<-which(MisLinks$target==subnodes$link_id)
+b
+c<-b
+if (length(a)==0) {
+     c<-b
+}else if(length(b)==0){
+     c<-a
+}else {
+     c<-a+b
+}
+c
+length(a)==0
+MisLinks[c,]
+subnodes
+subnodes<-MisNodes[MisNodes$name == "265335253877", ]
+#sublinks <- MisLinks[MisLinks$source %in% subnodes$link_id & MisLinks$target %in% subnodes$link_id, ]
+MisLinks
+
+a<-which(MisLinks$source==subnodes$link_id)
+b<-which(MisLinks$target==subnodes$link_id)
+if(length((a)!=0)){sublinks<-rbind(sublinks,MisLinks[a,])}
+if(length((b)!=0)){sublinks<-rbind(sublinks,MisLinks[b,])}
+subnodes
+sublinks %>% distinct()
+
+
+sublinks1
+sublinks2
+#sublinks$source <- match(sublinks$source, subnodes$link_id) - 1
+#sublinks$target <- match(sublinks$target, subnodes$link_id) - 1
+sublinks<-rbind(c("X","scoure","target","value"),sublinks1,sublinks2)
+drop(sublinks1[0:-1,])
+drop(sublinks2)
+
+C<-MisLinks[a,]
+C[0]
+D<-data.frame(c("X","scoure","target","value"))
+D
+
+
+
+265319017229
+#ceshi 
+subnodes<-MisNodes[MisNodes$name ==265321661653, ]
+subnodes
+a<-which(MisLinks$source==subnodes$link_id)
+a
+b<-which(MisLinks$target==subnodes$link_id)
+b
+if (length(a)==0) {
+     c<-b
+}else if(length(b)==0){
+     c<-a
+}else {
+     c<-a+b
+}
+sublinks<-MisLinks[c,]
+sublinks
+#这上面的是已经弄好了的
+x<-MisNodes[sublinks$scoure+1,]
+x
+y<-MisNodes[sublinks$target+1,]
+y
+z<-rbind(x,y)
+z<-unique(z)
+subnodes<-z
+subnodes  #这里就可以得到subnodes了
+
+
+
+
+subnodes$Number<-c(0:(length(z$name)-1))
+subnodes
+sublinks
+z<-subnodes
+z
+names(z)[names(z) == "link_id"] <- "scoure"
+D1<-inner_join(sublinks,z,by="scoure")
+D1
+sublinks$scoure <- D1$Number
+sublinks
+names(z)[names(z) == "scoure"] <- "target"
+D1<-inner_join(sublinks,z,by="target")
+D1
+sublinks$target <- D1$Number
+subnodes
+sublinks
+
+
+
+
+
+subnodes0<-reactive({  #获取最基本的
+          subnodes0<-MisNodes[MisNodes$name == input$name, ]
+     })
+     
+     sublinks0<-reactive({#将sublinks检索出来
+          subnodes<-subnodes0()
+         a<-which(MisLinks$scoure==subnodes$link_id)
+          b<-which(MisLinks$target==subnodes$link_id)
+          if (length(a)==0) {
+               c<-b
+          }else if(length(b)==0){
+               c<-a
+          }else {
+               c<-a+b
+          }
+          length(a)==0
+          sublinks0<-MisLinks[c,]
+     })
+     
+     subnodes<-reactive({ #检索出要画的点
+          sublinks<-sublinks0()
+          x<-MisNodes[sublinks$scoure+1,]
+          y<-MisNodes[sublinks$target+1,]
+          z<-rbind(x,y)
+          z<-unique(z)
+          subnodes<-z
+          subnodes$Number<-c(0:(length(z$name)-1))
+     })
+     
+     sublinks<-reactive({ #改变要画的边的索引
+          subnodes$Number<-c(0:(length(z$name)-1))
+          z<-subnodes
+          z
+          names(z)[names(z) == "link_id"] <- "scoure"
+          D1<-inner_join(sublinks,z,by="scoure")
+          D1
+          sublinks$scoure <- D1$Number
+          names(z)[names(z) == "scoure"] <- "target"
+          D1<-inner_join(sublinks,z,by="target")
+          sublinks$target <- D1$Number
+          
+          
+          
+          z<-subnodes()
+          print(z)
+          sublinks<-sublinks0()
+          z$Number<-c(0:(length(z$name)-1))
+          names(z)[names(z) == "link_id"] <- "scoure"
+          D1<-inner_join(sublinks,z,by="scoure")
+          sublinks$scoure <- D1$Number
+          names(z)[names(z) == "scoure"] <- "target"
+          D1<-inner_join(sublinks,z,by="target")
+          sublinks$target <- D1$Number
+     })
+     
+     
+     
+     
+     
+     网址：
+     https://www.jianshu.com/p/aa6e68fc5bc8
+     https://blog.csdn.net/kl28978113/article/details/84336795
+     https://blog.csdn.net/fens/article/details/84635219
+     https://www.jianshu.com/p/458f2100ba83
+     https://zhuanlan.zhihu.com/p/88361464?utm_source=ZHShareTargetIDMore
+     https://www.baidu.com/s
+     https://shiny.rstudio.com/     #重要
+     https://www.thinbug.com/q/48338915
+     https://www.cnblogs.com/Hyacinth-Yuan/p/8372563.html
+     https://blog.csdn.net/zrjdds/article/details/49616407?_t_t_t=0.32852270593866706
+     https://zhuanlan.zhihu.com/p/141871584?utm_source=wechat_timeline
+     https://cloud.tencent.com/developer/article/1784651
+     https://zhuanlan.zhihu.com/p/127332630
+     https://blog.csdn.net/hongweigg/article/details/47948597
+     https://blog.csdn.net/qq_27586341/article/details/91365165
+     https://blog.csdn.net/sinat_30361015/article/details/86702618
+     https://blog.csdn.net/weixin_32799203/article/details/117763010?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~aggregatepage~first_rank_ecpm_v1~rank_v31_ecpm-2-117763010.pc_agg_new_rank&utm_term=r%E8%AF%AD%E8%A8%80%E7%88%AC%E8%99%AB%E7%82%B9%E5%87%BB&spm=1000.2123.3001.4430
+     https://blog.csdn.net/u010797364/article/details/120449575
+     https://blog.csdn.net/yuanzhoulvpi/article/details/104033709
+     https://blog.csdn.net/HHTNAN/article/details/54572066?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-1.pc_relevant_default&spm=1001.2101.3001.4242.2&utm_relevant_index=4
+     https://blog.csdn.net/kl28978113/article/details/84336795
+     
+     #列表相加
+     https://www.cnblogs.com/Allen-rg/p/9506524.html
+     #match
+     https://www.jianshu.com/p/cb34c2f19eb3
+     #mutate
+     https://www.jianshu.com/p/cd1fc4443409
+     #合并数据
+     https://blog.csdn.net/tandelin/article/details/95172042
+     
+     
+     https://blog.csdn.net/weixin_30595035/article/details/98608064
+     https://www.jianshu.com/p/aa6e68fc5bc8
+     https://stackoverflow.com/questions/61979235/how-to-subset-data-in-networkd3-on-shiny/62028403#62028403
+     https://stackoverflow.com/questions/61979235/how-to-subset-data-in-networkd3-on-shiny/62028403#62028403
+ 

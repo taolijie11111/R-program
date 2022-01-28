@@ -1,0 +1,3 @@
+today (2022.1.27) i get a work about R,i trid for a day ,but don't solution the question . There are too many bug in R ,and i really don't like R. No ,actually i plan to C++ not R.
+this work worth 100yuan ,but i didn't scrap it.
+i am a foolman...

@@ -1,0 +1,89 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# homework-2
+
+# Read Data 
+```{r}
+Read_table<-read.csv(file = "Rdata.csv", header = T)
+Read_table
+```
+
+```{r}
+#剔除格式上的无用数据
+Read_table<-Read_table[-c(807:995),-c(5:6)]
+Read_table
+```
+
+```{r}
+#使用sapply对Call.Duration中是否含有m进行判断
+Judge_<-function(x){
+     return (x==grep("m",x,value = TRUE))
+}
+Read_table$Judge<-sapply(Read_table$Call.Duration,FUN = Judge_)
+Read_table
+Read_table$Judge<- as.numeric(Read_table$Judge) 
+Read_table$Judge[is.na(Read_table$Judge)]<-0
+Read_table
+```
+```{r}
+#分别对含有m和不含有m的行进行处理
+S<-Read_table[Read_table$Judge==0,"Call.Duration"]
+Read_table$DurationNum<-0 #先初始化为0
+S<-gsub("s$","",S)
+S<-as.numeric(S)
+Read_table$DurationNum[Read_table$Judge==0]<-S #删去s
+Read_table
+#处理含有m的数据，将其化为秒数输出
+DisposeM<- function(x) {
+     x<-gsub("s$","",x)#去除s
+     x<-gsub("[,]","",x)#去除，
+     a<-strsplit(x,"m",fixed = TRUE)[[1]][1]    
+     b<-strsplit(x,"m",fixed = TRUE)[[1]][-1] 
+     a<-as.numeric(a)
+     b<-as.numeric(b)
+     return (a*60+b)
+}
+M<-Read_table[Read_table$Judge==1,"Call.Duration"]
+M<-sapply(M,FUN = DisposeM)
+M<-as.numeric(M)
+Read_table$DurationNum[Read_table$Judge==1]<-M
+Read_table
+```
+
+
+```{r}
+#数据处理完毕，将数据去重，并加上频次
+library(dplyr)
+MisLinks_self<-Read_table%>%group_by(From,TO)%>%summarise(manNum=n())
+MisLinks_self<-data.frame(MisLinks_self)
+```
+
+```{r}
+MisNodes_self<-Read_table%>%group_by(From)%>%summarise(Node=n())
+MisNodes_self<-data.frame(MisNodes)
+```
+
+```{r}
+networkData<-Read_data[,c("From","TO")]
+networkData
+```
+
+
+
+```{r}
+library('networkD3')
+```
+
+
+
+```{r}
+simpleNetwork(networkData)
+```
+
+```{r}
+forceNetwork(Links = MisLinks_self,Nodes = MisNodes_self, Source="From",Target="TO")
+```
+

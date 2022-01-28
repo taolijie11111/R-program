@@ -1,0 +1,112 @@
+---
+title: "R Notebook"
+output: 
+     html_document:
+          toc: true
+          df_print: paged
+---
+
+```{r}
+library(networkD3)
+data('MisLinks')
+data("MisNodes")
+print(MisLinks)
+print(MisNodes)
+```
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+Read_table<-read.csv(file = "Rdata.csv", header = T)
+Read_table
+```
+
+```{r}
+Read_table<-Read_table[-c(807:995),-c(5:6)]
+Read_table
+```
+```{r}
+networkData<-Read_table[,c("From","TO")]
+networkData
+```
+```{r}
+simpleNetwork(networkData)
+```
+
+```{r}
+MisLinks<-networkData%>%group_by(From,TO)%>%summarise(SizeEdge=n())
+MisLinks<-data.frame(MisLinks)
+MisLinks
+```
+
+```{r}
+datanotes<-networkData%>%group_by(From)%>%summarise(Size=n())
+datanotes
+datanotes2<-networkData%>%group_by(TO)%>%summarise(Size=n())
+datanotes2
+```
+
+
+
+
+
+
+
+```{r}
+MisNodes<-read.csv(file = "data1.csv", header = T)
+MisNodes
+MisNodes<-MisNodes%>%group_by(From)%>%summarise(Size=sum(Size))
+MisNodes
+```
+```{r}
+#编号
+MisNodes$Number<-c(0:141)
+MisNodes$TO<-MisNodes$From
+MisNodes
+```
+
+```{r}
+#MisLinks
+D1<-inner_join(MisLinks,MisNodes,by="From")
+D1
+names(D1)[names(D1) == "Number"] <- "scoure"
+names(D1)[names(D1) == "TO.x"] <- "TO"
+D1<-D1[,c("From","TO","scoure","SizeEdge")]
+D1
+D2<-inner_join(MisLinks,MisNodes,by="TO")
+D2
+names(D2)[names(D2) == "Number"] <- "target"
+MisLinks<-data.frame(D1$scoure,D2$target,D1$Size)
+colnames(MisLinks) <- c("scoure", "target","value")
+MisLinks
+```
+
+```{r}
+#MisNodes
+MisNodes<-subset(MisNodes, select = -c(-1,-2))
+MisNodes$group<-1
+colnames(MisNodes) <- c("name", "size","group")
+MisNodes
+```
+
+```{r}
+#将数据导出
+write.csv(MisLinks,"MisLinks.csv")
+write.csv(MisNodes,"MisNodes.csv")
+```
+
+
+```{r}
+forceNetwork(MisLinks, MisNodes,"scoure", "target","value", "name", "size","group",
+  height = 500, width = 1200,
+  colourScale = JS("d3.scaleOrdinal(d3.schemeCategory20);"), fontSize = 15,
+  fontFamily = "黑体", linkDistance = 300,
+  linkWidth = JS("function(d) { return Math.sqrt(d.value)*0.1; }"),
+  radiusCalculation = JS("Math.sqrt(d.nodesize)+6"), charge = -30,
+  linkColour = "#666", opacity = 0.8, zoom = FALSE, legend = FALSE,
+  arrows =FALSE, bounded = FALSE, opacityNoHover = 1,
+  clickAction = NULL)
+```
+
